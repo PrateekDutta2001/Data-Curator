@@ -178,9 +178,13 @@ python server.py
 # Or using Flask directly
 flask run
 
-# Production (using Gunicorn)
+# Production (using Gunicorn - Linux/macOS)
 pip install gunicorn
 gunicorn -w 4 -b 0.0.0.0:5000 server:app
+
+# Production (using Waitress - Windows)
+pip install waitress
+waitress-serve --host=0.0.0.0 --port=5000 server:app
 ```
 
 The application will be available at `http://localhost:5000`
@@ -190,17 +194,14 @@ The application will be available at `http://localhost:5000`
 ```
 data-curator/
 ├── server.py              # Flask backend server
-├── templates/
-│   └── index.html        # Main HTML template
-├── static/
-│   ├── css/
-│   │   └── style.css     # Stylesheet
-│   └── js/
-│       └── app.js        # Frontend JavaScript
+├── index.html            # Main HTML template
+├── style.css             # Stylesheet
+├── app.js                # Frontend JavaScript
 ├── requirements.txt       # Python dependencies
-├── .env                  # Environment variables
+├── .env                  # Environment variables (create from .env.example)
 ├── README.md            # This file
-└── LICENSE              # MIT License
+├── LICENSE              # MIT License
+└── QUICK_START.md       # Quick start guide
 ```
 
 ## Configuration
@@ -218,15 +219,17 @@ data-curator/
 
 ### Application Configuration
 
-Configuration can be modified in `config.py`:
+Configuration can be modified directly in `server.py`:
 
 ```python
-class Config:
-    MAX_DATASET_ROWS = 100000
-    SUPPORTED_FORMATS = ['CSV', 'XLSX', 'JSON', 'TXT']
-    DEFAULT_MODEL = 'stepfun/step-3.5-flash:free'
-    API_BASE_URL = 'https://openrouter.ai/api/v1'
+# Configuration constants in server.py
+MAX_ROWS = 100000
+DEFAULT_MODEL = "stepfun/step-3.5-flash:free"
+API_TIMEOUT = 60
+MAX_RETRIES = 3
 ```
+
+Supported export formats: CSV, XLSX, JSON, TXT
 
 ## API Documentation
 
@@ -291,15 +294,20 @@ Generate synthetic dataset based on schema.
 }
 ```
 
-#### GET `/api/export`
+#### POST `/api/export`
 
 Export dataset in specified format.
 
-**Query Parameters:**
-- `format`: CSV, XLSX, JSON, or TXT
-- `data`: Base64 encoded dataset JSON
+**Request Body:**
+```json
+{
+  "format": "CSV",
+  "dataset_name": "my_dataset",
+  "data": [...]
+}
+```
 
-**Response:** File download
+**Response:** File download with appropriate MIME type
 
 ### Error Responses
 
@@ -399,15 +407,21 @@ All endpoints return standardized error responses:
 ### Local Development
 
 ```bash
-python app.py
+python server.py
 ```
 
 ### Production Deployment
 
-#### Using Gunicorn
+#### Using Gunicorn (Linux/macOS)
 
 ```bash
-gunicorn -w 4 -b 0.0.0.0:5000 --timeout 120 app:app
+gunicorn -w 4 -b 0.0.0.0:5000 --timeout 120 server:app
+```
+
+#### Using Waitress (Windows)
+
+```bash
+waitress-serve --host=0.0.0.0 --port=5000 --threads=4 server:app
 ```
 
 #### Using Docker
@@ -453,11 +467,11 @@ Production environments should:
 ### Testing
 
 ```bash
-# Run tests
+# Run tests (if test suite is available)
 pytest
 
 # With coverage
-pytest --cov=app tests/
+pytest --cov=server tests/
 ```
 
 ## License
@@ -474,11 +488,11 @@ Built for data professionals who struggle to get basic data for AI experiments.
 
 - OpenRouter for LLM API access
 - Faker library contributors
-- Streamlit community
+- Flask community
 - Open source contributors
 
 ---
 
 **Version**: 1.0.0  
-**Last Updated**: 2024  
+**Last Updated**: 2026  
 **Status**: Production Ready
