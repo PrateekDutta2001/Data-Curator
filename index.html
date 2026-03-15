@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-Powered Synthetic Dataset Generator for ML/AI Experiments">
+    <meta name="theme-color" content="#6366f1">
+    <title>Data Curator - AI Synthetic Dataset Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>Data Curator</h1>
+                    <p class="subtitle">AI-Powered Synthetic Dataset Generator for ML/AI Experiments</p>
+                </div>
+                <div class="header-right">
+                    <span class="badge badge-primary">✨ AI-Powered</span>
+                    <span class="badge badge-success">🤖 LLM Integrated</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2>⚙️ Configuration</h2>
+                    <p>Configure your dataset generation settings</p>
+                </div>
+
+                <div class="sidebar-content">
+                    <!-- Example Problem Statement -->
+                    <div class="form-group">
+                        <label class="form-label">📋 Example Problem Statement</label>
+                        <div class="example-code">
+                            <pre><code>Generate a telecom customer churn dataset.
+
+Columns:
+customer_id, age, monthly_bill, contract_type, tenure_months, internet_service, support_calls, churn
+
+Customers with higher support_calls and lower tenure are more likely to churn.</code></pre>
+                            <button class="btn btn-secondary btn-sm" id="useExampleBtn">📋 Use This Example</button>
+                        </div>
+                        <div class="example-tips">
+                            <p><strong>💡 Tips:</strong></p>
+                            <ul>
+                                <li>Start with a clear description of what the dataset is for</li>
+                                <li>List all column names separated by commas</li>
+                                <li>Add any business rules or relationships between columns</li>
+                                <li>Be specific about data types if needed</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-footer">
+                        <p>💡 <strong>Tip:</strong> Be specific about column names and data types for best results</p>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Loading Spinner -->
+                <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+                    <div class="spinner"></div>
+                    <p id="loadingText">Generating schema using AI...</p>
+                </div>
+
+                <!-- Error Messages -->
+                <div id="errorMessage" class="alert alert-error" style="display: none;"></div>
+
+                <!-- Success Messages -->
+                <div id="successMessage" class="alert alert-success" style="display: none;"></div>
+
+                <!-- Welcome Section -->
+                <div id="welcomeSection" class="welcome-section" style="display: none;">
+                    <h2>🚀 Get Started</h2>
+                    <p>Configure your dataset settings in the sidebar and click <strong>"Generate Dataset"</strong> to create synthetic data for your AI/ML projects. The AI will automatically generate a schema based on your description.</p>
+                </div>
+
+                <!-- Problem Statement Input Section -->
+                <div id="problemStatementSection" class="result-section">
+                    <h3>📝 Problem Statement</h3>
+                    <div class="form-group">
+                        <textarea 
+                            id="problemStatementMain" 
+                            class="form-textarea" 
+                            rows="10"
+                            placeholder="Enter your problem statement here. Describe the dataset you want to generate, including column names and any business rules or relationships.
+
+Example:
+Generate a telecom customer churn dataset.
+
+Columns:
+customer_id, age, monthly_bill, contract_type, tenure_months, internet_service, support_calls, churn
+
+Customers with higher support_calls and lower tenure are more likely to churn."
+                        ></textarea>
+                    </div>
+                    
+                    <!-- Dataset Size -->
+                    <div class="form-group">
+                        <label class="form-label">📊 Dataset Size</label>
+                        <div class="radio-group" id="rowSizeGroup">
+                            <label class="radio-label">
+                                <input type="radio" name="rowSize" value="100" checked>
+                                <span>100</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="rowSize" value="500">
+                                <span>500</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="rowSize" value="1000">
+                                <span>1000</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="rowSize" value="5000">
+                                <span>5000</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="rowSize" value="10000">
+                                <span>10000</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="rowSize" value="custom">
+                                <span>Custom</span>
+                            </label>
+                        </div>
+                        <input 
+                            type="number" 
+                            id="customRows" 
+                            class="form-input" 
+                            min="1" 
+                            max="100000" 
+                            value="1000" 
+                            step="100"
+                            style="display: none; margin-top: 10px;"
+                            placeholder="Enter number of rows (max 100,000)"
+                        >
+                    </div>
+
+                    <!-- Output Format -->
+                    <div class="form-group">
+                        <label class="form-label">💾 Export Format</label>
+                        <select id="outputFormat" class="form-select">
+                            <option value="CSV">CSV</option>
+                            <option value="XLSX">XLSX</option>
+                            <option value="JSON">JSON</option>
+                            <option value="TXT">TXT</option>
+                        </select>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <div class="form-group">
+                        <button id="generateBtn" class="btn btn-primary btn-block">
+                            🚀 Generate Dataset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Schema Section -->
+                <div id="schemaSection" class="result-section" style="display: none;">
+                    <h3>📋 Generated Schema</h3>
+                    <details>
+                        <summary>View Schema</summary>
+                        <pre id="schemaDisplay" class="code-block"></pre>
+                    </details>
+                </div>
+
+                <!-- Dataset Statistics -->
+                <div id="statsSection" class="stats-section" style="display: none;">
+                    <h3>📈 Dataset Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="statRows">0</div>
+                            <div class="stat-label">Total Rows</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="statColumns">0</div>
+                            <div class="stat-label">Total Columns</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="statName">-</div>
+                            <div class="stat-label">Dataset Name</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Preview -->
+                <div id="previewSection" class="result-section" style="display: none;">
+                    <h3>📊 Data Preview (First 20 Rows)</h3>
+                    <div class="table-container">
+                        <table id="dataTable" class="data-table">
+                            <thead id="tableHead"></thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Download Section -->
+                <div id="downloadSection" class="result-section" style="display: none;">
+                    <h3>💾 Download Dataset</h3>
+                    <div class="download-container">
+                        <button id="downloadBtn" class="btn btn-success btn-large">
+                            ⬇️ Download Dataset
+                        </button>
+                        <div class="download-info">
+                            <p><strong>Format:</strong> <span id="downloadFormat">CSV</span></p>
+                            <p><strong>Size:</strong> <span id="downloadSize">-</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature Highlights -->
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3>🤖 AI-Powered</h3>
+                        <p>Automatic schema generation from natural language descriptions</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📊 Multiple Formats</h3>
+                        <p>Export to CSV, XLSX, JSON, or TXT formats</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>⚡ Scalable</h3>
+                        <p>Generate up to 100,000 rows efficiently</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Copyright (c) 2026 Prateek Dutta, All rights reserved.MIT License </p>
+            <p>Built for data professionals who struggle to get basic data for AI experiments</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
